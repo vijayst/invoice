@@ -1,0 +1,104 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Invoice {{invoiceNumber}}</title>
+  <style>
+    {{{styles}}}
+  </style>
+</head>
+<body>
+  <h1>Invoice</h1>
+
+  <div class="meta">
+    <table>
+      <tbody>
+        <tr>
+          <td><strong>Invoice #</strong></td>
+          <td>{{invoiceNumber}}</td>
+        </tr>
+        <tr>
+          <td><strong>Date</strong></td>
+          <td>{{date}}</td>
+        </tr>
+        <tr>
+          <td><strong>Due Date</strong></td>
+          <td>{{dueDate}}</td>
+        </tr>
+        <tr>
+          <td><strong>Amount</strong></td>
+          <td>{{total}} {{currency}}</td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+
+  <p class="party">
+    <strong>Billed From:</strong><br />
+    {{from.name}}<br />
+    {{from.company}}<br />
+    <span class="address">{{from.address}}</span>
+  </p>
+
+  <p class="party">
+    <strong>Billed To:</strong><br />
+    {{to.name}}<br />
+    {{to.company}}<br />
+    <span class="address">{{to.address}}</span>
+  </p>
+
+  <hr />
+
+  <h2>Invoice Details</h2>
+  <table>
+    <thead>
+      <tr>
+        <th>Description</th>
+        <th>Amount ({{currency}})</th>
+      </tr>
+    </thead>
+    <tbody>
+      {{#each lineItems}}
+      <tr>
+        <td>{{description}}</td>
+        <td><strong>${{amount}}</strong></td>
+      </tr>
+      {{/each}}
+    </tbody>
+  </table>
+
+  <p><strong>Total:</strong> <strong>${{total}} {{currency}}</strong></p>
+
+  <hr />
+
+  <h2>Payment Instructions (Wire Transfer)</h2>
+  <div class="wire">
+    <table>
+      <tbody>
+        <tr>
+          <td><strong>Name</strong></td>
+          <td>{{payment.name}}</td>
+        </tr>
+        <tr>
+          <td><strong>Routing #</strong></td>
+          <td>{{payment.routingNumber}}</td>
+        </tr>
+        <tr>
+          <td><strong>Account #</strong></td>
+          <td>{{payment.accountNumber}}</td>
+        </tr>
+        <tr>
+          <td><strong>Bank address</strong></td>
+          <td>{{payment.bankAddress}}</td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+
+  <hr />
+
+  <p><em>Please remit payment within {{paymentTermsDays}} days of the invoice date.</em></p>
+  <p><em>Thank you for your business!</em></p>
+</body>
+</html>

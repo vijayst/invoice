@@ -1,0 +1,30 @@
+{
+  "invoiceNumber": "INV-2026-0801",
+  "date": "Sept 3, 2026",
+  "dueDate": "Sep 18, 2026",
+  "currency": "USD",
+  "total": "100.00",
+  "paymentTermsDays": 15,
+  "from": {
+    "name": "Vijay",
+    "company": "Vijay Inc.",
+    "address": "2150 Alpha Street\nMississauga, ON L4Y 2N9"
+  },
+  "to": {
+    "name": "Brian",
+    "company": "Brian Inc.",
+    "address": "400 Beta Avenue\nMiami, FL 12345"
+  },
+  "lineItems": [
+    {
+      "description": "Consultation charges for August 2026",
+      "amount": "100.00"
+    }
+  ],
+  "payment": {
+    "name": "Vijay",
+    "routingNumber": "011234567",
+    "accountNumber": "336342531406123",
+    "bankAddress": "Wise US Inc, 108 W 13th St, Wilmington, DE 19801 United States"
+  }
+}

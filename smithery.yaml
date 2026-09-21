@@ -1,0 +1,7 @@
+# smithery.yaml
+runtime: node
+build:
+  command: npm run build:mcp
+start:
+  command: node dist/index.js
+  args: []

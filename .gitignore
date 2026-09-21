@@ -1,1 +1,6 @@
 node_modules/
+dist/
+output/*
+!output/preview.png
+*.log
+.DS_Store
