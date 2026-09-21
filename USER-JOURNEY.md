@@ -55,6 +55,8 @@ Typical loop:
 | Edit layout / styles / data | `write_template_file` | Files in the npx workspace |
 | Render | `run_generate_build` | `output/invoice.pdf` and `output/preview.png` |
 | Visual check | `get_invoice_preview` | Preview image in the chat |
+| See install path | `get_workspace_root` | Directory this MCP is using |
+| Later: save into a fork | `export_studio_to_repo` | Stage 4 — not needed until you clone |
 
 If Chrome is missing, set `CHROME_PATH` to the browser binary and generate again.
 
@@ -74,21 +76,46 @@ cd invoice
 
 Leave the registry/`npx` MCP connected. You still need it to read the templates you just designed.
 
-## Stage 4 — Copy npx work into the fork
+## Stage 4 — Copy npx work into the fork (`export_studio_to_repo`)
 
-The designed files live in the npx workspace, not in the fresh clone. Ask the agent (give the **absolute** path of the clone):
+The designed files live in the npx workspace, not in the fresh clone. Keep the registry/`npx` MCP connected and ask the agent, with the **absolute** path of the clone:
 
 > Export my studio files into `/absolute/path/to/my-fork`
 
-`export_studio_to_repo` copies:
+That calls **`export_studio_to_repo`**. It copies these files from the running MCP workspace into the destination (overwriting the fork’s copies):
 
-- `src/templates/invoice.md`
-- `src/styles/invoice.css`
-- `src/data/invoice-input.json`
+| Source in npx workspace | Destination in the clone |
+|-------------------------|--------------------------|
+| `src/templates/invoice.md` | `src/templates/invoice.md` |
+| `src/styles/invoice.css` | `src/styles/invoice.css` |
+| `src/data/invoice-input.json` | `src/data/invoice-input.json` |
 
-from the running MCP workspace into that directory.
+### Tool parameters
 
-To copy only template and CSS, say so; the tool can skip the JSON (`includeData: false`).
+| Parameter | Required | Default | Meaning |
+|-----------|----------|---------|---------|
+| `destinationDir` | yes | — | Absolute path to the cloned fork (the folder that contains `src/` and `package.json`). Relative paths are rejected. |
+| `includeData` | no | `true` | If `false`, skip `invoice-input.json` and copy only template + CSS. |
+
+The destination directory must already exist. The tool creates `src/templates`, `src/styles`, and `src/data` under it if they are missing, then `copyFile`s the three studio files.
+
+Optional: ask `get_workspace_root` first if you want to confirm you are exporting **from** the npx install, not from some other checkout.
+
+### Example prompts
+
+- Template, CSS, and sample/edited JSON:
+
+  > Export my studio files into `/Users/YOU/invoice`
+
+- Layout only (keep the fork’s existing JSON):
+
+  > Export only the template and CSS into `/Users/YOU/invoice`
+
+### What the tool returns
+
+JSON with `success`, `sourceRoot` (npx or current MCP workspace), `destinationDir`, `copied`, `skipped`, and a `nextStep` reminder to install, build, and point MCP at the clone’s `dist/index.js`.
+
+It does **not** run `git`, `npm install`, or switch your MCP config. You still do Stage 5 after the copy.
 
 ## Stage 5 — Run the studio from your clone
 
@@ -123,5 +150,6 @@ Monthly invoices: edit `src/data/invoice-input.json` (or ask the agent to), rege
 | MCP Registry | Find the server and install metadata |
 | `npx @vijayst/invoice-studio` | Instant studio + sample data + PDF loop |
 | GitHub fork + clone | Your long-lived project |
-| `export_studio_to_repo` | Move the npx template/CSS/data into that clone |
+| `get_workspace_root` | Show the folder the running MCP reads/writes |
+| `export_studio_to_repo` | Copy template, CSS, and (optionally) JSON from that folder into your clone |
 | Clone + `dist/index.js` | Ongoing edits and invoices you keep in git |
