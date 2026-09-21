@@ -47,6 +47,7 @@
 | **Bank address** | {{payment.bankAddress}} |
 
 </div>
+
 ---  
 
 *Please remit payment within {{paymentTermsDays}} days of the invoice date.*  
