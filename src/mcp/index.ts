@@ -26,7 +26,7 @@ function resolveWorkspacePath(relativePath: string): string {
 // 1. Read Template / Style
 mcp.addTool({
   name: 'read_template_file',
-  description: 'Read contents of a template or stylesheet file (e.g. src/templates/invoice.hbs).',
+  description: 'Read contents of a template or stylesheet file (e.g. src/templates/invoice.md).',
   parameters: z.object({
     filePath: z.string().describe('Relative path to file inside repository.'),
   }),

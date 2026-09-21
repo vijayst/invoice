@@ -3,18 +3,22 @@ import { promises as fs } from 'node:fs';
 import path from 'node:path';
 import { fileURLToPath } from 'node:url';
 import Handlebars from 'handlebars';
+import { marked } from 'marked';
 import puppeteer from 'puppeteer-core';
 
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
 const WORKSPACE_DIR = path.resolve(__dirname, '..');
 
-const TEMPLATE_PATH = path.join(WORKSPACE_DIR, 'src/templates/invoice.hbs');
+const TEMPLATE_PATH = path.join(WORKSPACE_DIR, 'src/templates/invoice.md');
 const STYLES_PATH = path.join(WORKSPACE_DIR, 'src/styles/invoice.css');
 const DATA_PATH = path.join(WORKSPACE_DIR, 'src/data/invoice-input.json');
 const OUTPUT_DIR = path.join(WORKSPACE_DIR, 'output');
+const MD_OUT = path.join(OUTPUT_DIR, 'invoice.md');
 const HTML_OUT = path.join(OUTPUT_DIR, 'invoice.html');
 const PDF_OUT = path.join(OUTPUT_DIR, 'invoice.pdf');
 const PREVIEW_OUT = path.join(OUTPUT_DIR, 'preview.png');
+
+marked.setOptions({ gfm: true, breaks: true });
 
 function resolveChromeExecutable() {
   const candidates = [
@@ -30,7 +34,24 @@ function resolveChromeExecutable() {
   return candidates[0];
 }
 
-async function renderHtml() {
+function wrapHtml(bodyHtml, styles) {
+  return `<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Invoice</title>
+  <style>
+${styles}
+  </style>
+</head>
+<body>
+${bodyHtml}
+</body>
+</html>`;
+}
+
+async function renderMarkdown() {
   const [templateSource, styles, rawData] = await Promise.all([
     fs.readFile(TEMPLATE_PATH, 'utf-8'),
     fs.readFile(STYLES_PATH, 'utf-8'),
@@ -38,10 +59,12 @@ async function renderHtml() {
   ]);
 
   const data = JSON.parse(rawData);
-  const template = Handlebars.compile(templateSource);
-  const html = template({ ...data, styles });
+  const markdown = Handlebars.compile(templateSource)(data);
+  const bodyHtml = marked.parse(markdown);
+  const html = wrapHtml(bodyHtml, styles);
 
   await fs.mkdir(OUTPUT_DIR, { recursive: true });
+  await fs.writeFile(MD_OUT, markdown, 'utf-8');
   await fs.writeFile(HTML_OUT, html, 'utf-8');
   return html;
 }
@@ -83,8 +106,9 @@ async function renderArtifacts(html) {
 }
 
 async function main() {
-  console.log('Compiling invoice template…');
-  const html = await renderHtml();
+  console.log('Compiling invoice markdown…');
+  const html = await renderMarkdown();
+  console.log(`Wrote ${path.relative(WORKSPACE_DIR, MD_OUT)}`);
   console.log(`Wrote ${path.relative(WORKSPACE_DIR, HTML_OUT)}`);
 
   console.log('Rendering PDF and preview PNG…');

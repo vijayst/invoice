@@ -1,7 +1,7 @@
 {
   "name": "invoice",
   "version": "1.0.0",
-  "description": "Invoice Studio — Handlebars templates with MCP tools for interactive editing and headless PDF generation",
+  "description": "Invoice Studio — Markdown invoice templates with MCP tools for interactive editing and headless PDF generation",
   "license": "ISC",
   "author": "",
   "type": "module",
@@ -15,6 +15,7 @@
     "fastmcp": "^4.20.16",
     "handlebars": "^4.7.8",
     "markdown-pdf": "^11.0.0",
+    "marked": "^15.0.12",
     "puppeteer-core": "^24.0.0",
     "zod": "^4.6.5"
   },
