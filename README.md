@@ -2,6 +2,8 @@
 
 Markdown invoice templates with an MCP server for interactive editing (Claude Desktop / Cursor / Windsurf) and a headless generate pipeline for monthly PDF runs.
 
+Agents: see [AGENTS.md](./AGENTS.md) for the edit → generate → preview workflow.
+
 ## How it works
 
 **Phase 1 — Interactive studio:** an AI client connects to the MCP server over stdio. You ask it to tweak the template or styles, regenerate, and inspect the preview PNG until the layout looks right.
