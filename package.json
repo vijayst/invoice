@@ -1,15 +1,41 @@
 {
-  "name": "invoice",
+  "name": "@vijayst/invoice-studio",
   "version": "1.0.0",
   "description": "Invoice Studio — Markdown invoice templates with MCP tools for interactive editing and headless PDF generation",
   "license": "ISC",
-  "author": "",
+  "author": "Vijay",
   "type": "module",
+  "mcpName": "io.github.vijayst/invoice-studio",
   "main": "dist/index.js",
+  "bin": {
+    "invoice-studio-mcp": "dist/index.js"
+  },
+  "files": [
+    "dist",
+    "scripts",
+    "src",
+    "AGENTS.md",
+    "README.md",
+    "server.json",
+    "smithery.yaml"
+  ],
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/vijayst/invoice.git"
+  },
+  "homepage": "https://github.com/vijayst/invoice",
+  "bugs": {
+    "url": "https://github.com/vijayst/invoice/issues"
+  },
+  "publishConfig": {
+    "access": "public"
+  },
   "scripts": {
+    "build": "tsc -p tsconfig.json",
     "build:mcp": "tsc -p tsconfig.json",
     "start:mcp": "node dist/index.js",
-    "generate": "node scripts/generate-invoice.js"
+    "generate": "node scripts/generate-invoice.js",
+    "prepublishOnly": "npm run build"
   },
   "dependencies": {
     "fastmcp": "^4.20.16",

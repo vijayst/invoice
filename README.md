@@ -2,7 +2,7 @@
 
 Markdown invoice templates with an MCP server for interactive editing (Claude Desktop / Cursor / Windsurf) and a headless generate pipeline for monthly PDF runs.
 
-Agents: see [AGENTS.md](./AGENTS.md) for the edit → generate → preview workflow.
+Agents: see [AGENTS.md](./AGENTS.md) for the edit → generate → preview workflow. Registry → PDF → fork: [USER-JOURNEY.md](./USER-JOURNEY.md).
 
 ## How it works
 
@@ -86,6 +86,27 @@ If you configure MCP manually in Cursor Settings, use the **absolute** path to `
 
 The server locates the repo from its own script path, so tools always read/write this project even if the client’s cwd is wrong.
 
+### Public MCP Registry
+
+Registry name: `io.github.vijayst/invoice-studio` (npm: [`@vijayst/invoice-studio`](https://www.npmjs.com/package/@vijayst/invoice-studio)). After publish, search the [official MCP Registry](https://registry.modelcontextprotocol.io/v0.1/servers?search=io.github.vijayst/invoice-studio).
+
+Clients that install from the registry typically run:
+
+```json
+{
+  "mcpServers": {
+    "invoice-studio": {
+      "command": "npx",
+      "args": ["-y", "@vijayst/invoice-studio"]
+    }
+  }
+}
+```
+
+`npx` runs a copy of this repo (sample data included). You can generate `output/invoice.pdf` in that copy, then fork this repo and export the template into the clone.
+
+Full walkthrough: [USER-JOURNEY.md](./USER-JOURNEY.md).
+
 ### 2. Interactive edit loop
 
 Ask the model something like:
@@ -101,6 +122,8 @@ Typical tool sequence:
 | `run_generate_build` | Runs `npm run generate` → PDF + `output/preview.png` |
 | `get_invoice_preview` | Returns the preview PNG for visual review |
 | `get_git_status` | Check what changed before committing |
+| `get_workspace_root` | Show the npx or clone directory this server is using |
+| `export_studio_to_repo` | Copy template/CSS/data from this workspace into a cloned fork |
 
 Repeat edit → generate → preview until satisfied, then commit.
 

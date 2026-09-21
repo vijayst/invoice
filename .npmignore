@@ -1,0 +1,7 @@
+.cursor/
+.git/
+.github/
+output/
+node_modules/
+*.log
+.DS_Store

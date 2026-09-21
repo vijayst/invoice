@@ -16,6 +16,7 @@ Help the user iterate on the invoice **look** (Markdown template + CSS) and/or *
 | `scripts/generate-invoice.js` | Build pipeline — do not rewrite unless asked. |
 | `src/mcp/index.ts` | MCP server — do not rewrite unless asked. |
 | `output/*` | Generated artifacts — do not hand-edit; regenerate instead. |
+| `USER-JOURNEY.md` | End-user path: MCP Registry → npx PDF loop → fork → export. |
 
 Do **not** resurrect legacy root files (`invoice.md`, `invoice.css`, `convert.js`).
 
@@ -28,6 +29,8 @@ If Invoice Studio MCP tools are connected, use them instead of raw shell/file ed
 3. `run_generate_build` — runs `npm run generate`.
 4. `get_invoice_preview` — load `output/preview.png` (default) as an image for visual QA.
 5. `get_git_status` — check diffs before proposing a commit.
+6. `get_workspace_root` — show whether the server is bound to an npx install or a clone.
+7. `export_studio_to_repo` — copy template/CSS/data into an absolute path of a forked clone.
 
 If MCP is unavailable, use normal editor/shell: edit the files above, then `npm run generate`, then open `output/preview.png`.
 

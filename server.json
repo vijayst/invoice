@@ -1,0 +1,24 @@
+{
+  "$schema": "https://static.modelcontextprotocol.io/schemas/2025-12-11/server.schema.json",
+  "name": "io.github.vijayst/invoice-studio",
+  "title": "Invoice Studio",
+  "description": "Edit Markdown invoice templates, generate PDFs, and inspect preview PNGs.",
+  "version": "1.0.0",
+  "websiteUrl": "https://github.com/vijayst/invoice",
+  "repository": {
+    "url": "https://github.com/vijayst/invoice",
+    "source": "github"
+  },
+  "packages": [
+    {
+      "registryType": "npm",
+      "registryBaseUrl": "https://registry.npmjs.org",
+      "identifier": "@vijayst/invoice-studio",
+      "version": "1.0.0",
+      "runtimeHint": "npx",
+      "transport": {
+        "type": "stdio"
+      }
+    }
+  ]
+}

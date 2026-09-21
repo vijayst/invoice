@@ -1,3 +1,4 @@
+#!/usr/bin/env node
 import { FastMCP, imageContent } from 'fastmcp';
 import { exec } from 'node:child_process';
 import { promises as fs } from 'node:fs';
@@ -25,6 +26,29 @@ function resolveWorkspacePath(relativePath: string): string {
     throw new Error(`Path escapes workspace: ${relativePath}`);
   }
   return resolved;
+}
+
+const STUDIO_EXPORT_FILES = [
+  'src/templates/invoice.md',
+  'src/styles/invoice.css',
+  'src/data/invoice-input.json',
+] as const;
+
+async function assertExportDestination(destinationDir: string): Promise<string> {
+  const dest = path.resolve(destinationDir);
+  if (!path.isAbsolute(destinationDir)) {
+    throw new Error('destinationDir must be an absolute path to your cloned fork.');
+  }
+  let stats;
+  try {
+    stats = await fs.stat(dest);
+  } catch {
+    throw new Error(`Destination does not exist: ${dest}`);
+  }
+  if (!stats.isDirectory()) {
+    throw new Error(`Destination is not a directory: ${dest}`);
+  }
+  return dest;
 }
 
 // 1. Read Template / Style
@@ -106,6 +130,60 @@ mcp.addTool({
   execute: async () => {
     const { stdout } = await execAsync('git status --short', { cwd: WORKSPACE_DIR });
     return JSON.stringify({ status: stdout || 'Working tree clean' });
+  },
+});
+
+// 6. Show where this process is reading/writing (npx cache vs a clone)
+mcp.addTool({
+  name: 'get_workspace_root',
+  description:
+    'Return the directory this MCP uses for templates, data, and generate output (npx install or a local clone).',
+  parameters: z.object({}),
+  execute: async () => {
+    return JSON.stringify({ workspaceRoot: WORKSPACE_DIR });
+  },
+});
+
+// 7. Copy iterated studio files from this workspace into a forked clone
+mcp.addTool({
+  name: 'export_studio_to_repo',
+  description:
+    'Copy invoice.md, invoice.css, and invoice-input.json from this MCP workspace into a local clone of a fork. Pass the absolute path of the clone.',
+  parameters: z.object({
+    destinationDir: z
+      .string()
+      .describe('Absolute path to the cloned fork (the directory that contains src/ and package.json).'),
+    includeData: z
+      .boolean()
+      .default(true)
+      .describe('If false, skip src/data/invoice-input.json and only copy template + CSS.'),
+  }),
+  execute: async ({ destinationDir, includeData }) => {
+    const destRoot = await assertExportDestination(destinationDir);
+    const copied: string[] = [];
+    const skipped: string[] = [];
+
+    for (const relativePath of STUDIO_EXPORT_FILES) {
+      if (!includeData && relativePath.startsWith('src/data/')) {
+        skipped.push(relativePath);
+        continue;
+      }
+      const from = resolveWorkspacePath(relativePath);
+      const to = path.join(destRoot, relativePath);
+      await fs.mkdir(path.dirname(to), { recursive: true });
+      await fs.copyFile(from, to);
+      copied.push(relativePath);
+    }
+
+    return JSON.stringify({
+      success: true,
+      sourceRoot: WORKSPACE_DIR,
+      destinationDir: destRoot,
+      copied,
+      skipped,
+      nextStep:
+        'Open the clone in Cursor, run npm install && npm run build:mcp, and point MCP at that folder’s dist/index.js.',
+    });
   },
 });
 
