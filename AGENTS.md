@@ -60,6 +60,8 @@ Update data first if amounts/dates are wrong, then template/CSS for presentation
 - After template/CSS/data edits, **always regenerate** before finishing — never assume the old preview is current.
 - Chrome/Chromium is required. If generate fails on missing browser, suggest setting `CHROME_PATH` to the local Chrome binary (macOS example: `/Applications/Google Chrome.app/Contents/MacOS/Google Chrome`).
 - Rebuild the MCP server only when changing `src/mcp/`: `npm run build:mcp`.
+- MCP entrypoint is `dist/index.js`. Clients must use an **absolute** path (or Cursor `${workspaceFolder}/dist/index.js`). Relative `dist/index.js` often resolves under the home directory and fails with `Cannot find module '.../dist/index.js'`.
+- The MCP server roots file ops at the repo containing `dist/index.js`, not `process.cwd()`.
 
 ## Commands
 

@@ -2,11 +2,15 @@ import { FastMCP, imageContent } from 'fastmcp';
 import { exec } from 'node:child_process';
 import { promises as fs } from 'node:fs';
 import path from 'node:path';
+import { fileURLToPath } from 'node:url';
 import { promisify } from 'node:util';
 import { z } from 'zod';
 
 const execAsync = promisify(exec);
-const WORKSPACE_DIR = process.cwd();
+
+// Resolve repo root from this file (dist/index.js → ../), not process.cwd().
+// Cursor/Claude often launch MCP with cwd = home directory.
+const WORKSPACE_DIR = path.resolve(path.dirname(fileURLToPath(import.meta.url)), '..');
 
 const mcp = new FastMCP({
   name: 'Invoice Studio MCP',

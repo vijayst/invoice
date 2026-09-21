@@ -1,0 +1,8 @@
+{
+  "mcpServers": {
+    "invoice-studio": {
+      "command": "node",
+      "args": ["${workspaceFolder}/dist/index.js"]
+    }
+  }
+}

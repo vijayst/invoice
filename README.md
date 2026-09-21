@@ -52,40 +52,39 @@ Artifacts land in `output/`.
 ### 1. Build and point your client at the server
 
 ```bash
-npm run build:mcp
+npm install
+npm run build:mcp   # required — creates dist/index.js
 ```
 
-**Cursor** — add to MCP settings (`.cursor/mcp.json` or Cursor Settings → MCP):
+**Cursor (recommended):** this repo includes `.cursor/mcp.json`. Open the project folder in Cursor, then reload MCP / the window. It uses `${workspaceFolder}/dist/index.js` so the path is always the repo root.
+
+If you configure MCP manually in Cursor Settings, use the **absolute** path to `dist/index.js` (relative `dist/index.js` alone resolves under your home directory and fails):
 
 ```json
 {
   "mcpServers": {
     "invoice-studio": {
       "command": "node",
-      "args": ["dist/index.js"],
-      "cwd": "/absolute/path/to/invoice"
+      "args": ["/Users/YOU/Documents/invoice/dist/index.js"]
     }
   }
 }
 ```
 
-**Claude Desktop** — in `claude_desktop_config.json`:
+**Claude Desktop** — in `claude_desktop_config.json` (absolute paths required):
 
 ```json
 {
   "mcpServers": {
     "invoice-studio": {
       "command": "node",
-      "args": ["/absolute/path/to/invoice/dist/index.js"],
-      "cwd": "/absolute/path/to/invoice"
+      "args": ["/Users/YOU/Documents/invoice/dist/index.js"]
     }
   }
 }
 ```
 
-`cwd` must be the repo root so tools read/write the right files and `npm run generate` works.
-
-Smithery users can install via `smithery.yaml` (`npm run build:mcp` then `node dist/index.js`).
+The server locates the repo from its own script path, so tools always read/write this project even if the client’s cwd is wrong.
 
 ### 2. Interactive edit loop
 
