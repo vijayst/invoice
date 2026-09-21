@@ -1,5 +1,6 @@
 #!/usr/bin/env node
-import { promises as fs } from 'node:fs';
+import { existsSync, promises as fs } from 'node:fs';
+import os from 'node:os';
 import path from 'node:path';
 import { fileURLToPath } from 'node:url';
 import Handlebars from 'handlebars';
@@ -20,18 +21,39 @@ const PREVIEW_OUT = path.join(OUTPUT_DIR, 'preview.png');
 
 marked.setOptions({ gfm: true, breaks: true });
 
-function resolveChromeExecutable() {
-  const candidates = [
+function chromeCandidates() {
+  const home = os.homedir();
+  return [
     process.env.CHROME_PATH,
     process.env.PUPPETEER_EXECUTABLE_PATH,
+    // macOS
+    '/Applications/Google Chrome.app/Contents/MacOS/Google Chrome',
+    '/Applications/Chromium.app/Contents/MacOS/Chromium',
+    path.join(home, 'Applications/Google Chrome.app/Contents/MacOS/Google Chrome'),
+    // Linux
     '/usr/local/bin/google-chrome',
     '/usr/bin/google-chrome',
     '/usr/bin/google-chrome-stable',
     '/usr/bin/chromium',
     '/usr/bin/chromium-browser',
+    '/snap/bin/chromium',
+    // Windows
+    'C:\\Program Files\\Google\\Chrome\\Application\\chrome.exe',
+    'C:\\Program Files (x86)\\Google\\Chrome\\Application\\chrome.exe',
   ].filter(Boolean);
+}
 
-  return candidates[0];
+/**
+ * Prefer an explicit existing binary; otherwise let puppeteer-core resolve
+ * the installed Chrome channel (works on macOS / Windows / Linux).
+ */
+function resolveBrowserLaunchOptions() {
+  for (const candidate of chromeCandidates()) {
+    if (existsSync(candidate)) {
+      return { executablePath: candidate };
+    }
+  }
+  return { channel: 'chrome' };
 }
 
 function wrapHtml(bodyHtml, styles) {
@@ -70,18 +92,19 @@ async function renderMarkdown() {
 }
 
 async function renderArtifacts(html) {
-  const executablePath = resolveChromeExecutable();
-  if (!executablePath) {
-    throw new Error(
-      'No Chrome/Chromium executable found. Set CHROME_PATH or PUPPETEER_EXECUTABLE_PATH.',
-    );
+  const browserOptions = resolveBrowserLaunchOptions();
+  let browser;
+  try {
+    browser = await puppeteer.launch({
+      ...browserOptions,
+      headless: true,
+      args: ['--no-sandbox', '--disable-setuid-sandbox', '--disable-dev-shm-usage'],
+    });
+  } catch (error) {
+    const hint =
+      'Install Google Chrome, or set CHROME_PATH / PUPPETEER_EXECUTABLE_PATH to your Chrome binary.';
+    throw new Error(`${error instanceof Error ? error.message : error}\n${hint}`);
   }
-
-  const browser = await puppeteer.launch({
-    executablePath,
-    headless: true,
-    args: ['--no-sandbox', '--disable-setuid-sandbox', '--disable-dev-shm-usage'],
-  });
 
   try {
     const page = await browser.newPage();
