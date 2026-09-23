@@ -36,6 +36,7 @@
     "start:mcp": "node dist/index.js",
     "generate": "node scripts/generate-invoice.js",
     "generate:hbs": "node scripts/generate-invoice-hbs.js",
+    "generate:raw": "node scripts/generate-invoice-raw.js",
     "prepublishOnly": "npm run build"
   },
   "dependencies": {
