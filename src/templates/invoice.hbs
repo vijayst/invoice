@@ -1,0 +1,99 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Invoice {{invoiceNumber}}</title>
+  <script src="https://cdn.jsdelivr.net/npm/@tailwindcss/browser@4"></script>
+</head>
+<body class="bg-white text-slate-800 antialiased">
+  <main class="px-12 py-10">
+    <header class="flex items-start justify-between gap-8 border-b-2 border-[#0a4b8f] pb-6">
+      <div>
+        <p class="text-xs font-semibold uppercase tracking-[0.25em] text-[#0a4b8f]">Invoice</p>
+        <h1 class="mt-2 text-3xl font-semibold tracking-tight text-slate-900">{{from.company}}</h1>
+        <p class="mt-3 text-sm leading-6 text-slate-600">
+          <span class="block font-medium text-slate-800">{{from.name}}</span>
+          <span class="mt-1 block whitespace-pre-line">{{from.address}}</span>
+        </p>
+      </div>
+      <dl class="min-w-48 shrink-0 rounded-md bg-slate-50 px-4 py-3 text-sm">
+        <div class="flex items-baseline justify-between gap-4 py-1">
+          <dt class="text-slate-500">Invoice</dt>
+          <dd class="font-semibold text-slate-900">{{invoiceNumber}}</dd>
+        </div>
+        <div class="flex items-baseline justify-between gap-4 py-1">
+          <dt class="text-slate-500">Date</dt>
+          <dd class="font-medium text-slate-900">{{date}}</dd>
+        </div>
+        <div class="flex items-baseline justify-between gap-4 py-1">
+          <dt class="text-slate-500">Due</dt>
+          <dd class="font-medium text-slate-900">{{dueDate}}</dd>
+        </div>
+      </dl>
+    </header>
+
+    <section class="mt-8 grid grid-cols-2 gap-6">
+      <div class="rounded-md border border-slate-200 px-4 py-4">
+        <h2 class="text-xs font-semibold uppercase tracking-wider text-slate-500">Billed to</h2>
+        <p class="mt-2 text-base font-semibold text-slate-900">{{to.name}}</p>
+        <p class="text-sm text-slate-700">{{to.company}}</p>
+        <p class="mt-1 whitespace-pre-line text-sm leading-6 text-slate-600">{{to.address}}</p>
+      </div>
+      <div data-tailwind-probe class="flex flex-col justify-between rounded-md bg-[#0a4b8f] px-5 py-4 text-white">
+        <p class="text-xs font-semibold uppercase tracking-wider text-blue-100">Amount due</p>
+        <p class="mt-3 text-3xl font-semibold tracking-tight">${{total}}</p>
+        <p class="mt-1 text-sm text-blue-100">{{currency}} · due {{dueDate}}</p>
+      </div>
+    </section>
+
+    <section class="mt-8">
+      <h2 class="text-xs font-semibold uppercase tracking-wider text-slate-500">Details</h2>
+      <table class="mt-3 w-full border-collapse text-sm">
+        <thead>
+          <tr class="border-b border-slate-300 text-left">
+            <th class="py-2 pr-4 font-medium text-slate-500">Description</th>
+            <th class="py-2 text-right font-medium text-slate-500">Amount ({{currency}})</th>
+          </tr>
+        </thead>
+        <tbody>
+          {{#each lineItems}}
+          <tr class="border-b border-slate-200">
+            <td class="py-3 pr-4 text-slate-800">{{description}}</td>
+            <td class="py-3 text-right font-medium tabular-nums text-slate-900">${{amount}}</td>
+          </tr>
+          {{/each}}
+        </tbody>
+      </table>
+      <div class="mt-4 flex justify-end">
+        <div class="w-56">
+          <div class="flex items-baseline justify-between border-t-2 border-[#0a4b8f] pt-3">
+            <span class="text-sm font-semibold uppercase tracking-wide text-slate-600">Total</span>
+            <span class="text-xl font-semibold tabular-nums text-slate-900">${{total}}</span>
+          </div>
+          <p class="mt-1 text-right text-xs text-slate-500">{{currency}}</p>
+        </div>
+      </div>
+    </section>
+
+    <section class="mt-10 rounded-md border border-slate-200 px-5 py-4">
+      <h2 class="text-xs font-semibold uppercase tracking-wider text-slate-500">Wire transfer</h2>
+      <dl class="mt-3 grid grid-cols-[9rem_1fr] gap-x-4 gap-y-2 text-sm">
+        <dt class="text-slate-500">Name</dt>
+        <dd class="font-medium text-slate-900">{{payment.name}}</dd>
+        <dt class="text-slate-500">Routing number</dt>
+        <dd class="font-medium tabular-nums text-slate-900">{{payment.routingNumber}}</dd>
+        <dt class="text-slate-500">Account number</dt>
+        <dd class="font-medium tabular-nums text-slate-900">{{payment.accountNumber}}</dd>
+        <dt class="text-slate-500">Bank address</dt>
+        <dd class="text-slate-800">{{payment.bankAddress}}</dd>
+      </dl>
+    </section>
+
+    <footer class="mt-10 border-t border-slate-200 pt-4 text-sm text-slate-500">
+      <p>Please remit payment within {{paymentTermsDays}} days of the invoice date.</p>
+      <p class="mt-1">Thank you for your business.</p>
+    </footer>
+  </main>
+</body>
+</html>

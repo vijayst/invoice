@@ -35,6 +35,7 @@
     "build:mcp": "tsc -p tsconfig.json",
     "start:mcp": "node dist/index.js",
     "generate": "node scripts/generate-invoice.js",
+    "generate:hbs": "node scripts/generate-invoice-hbs.js",
     "prepublishOnly": "npm run build"
   },
   "dependencies": {
